@@ -26,4 +26,5 @@ GLUE benchmark: [General Language UnderstandingEvaluation](https://gluebenchmark
   ├── config.py ## 配置超参数  
   ├── load_data.py ## 加载GLUE的数据
   ├── helper.py ## 设置随机种子
+  ├── requirements.txt ## 环境
   ```
