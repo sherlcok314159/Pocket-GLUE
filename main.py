@@ -130,7 +130,11 @@ def train(task, dataloader, model, optimizer, scheduler):
         model.zero_grad()
     
         logits = outputs[1]
-        y_pred = np.argmax(logits.detach().cpu().numpy(), axis=1)
+        if task != "STS-B":
+            y_pred = np.argmax(logits.detach().cpu().numpy(), axis=1)
+        else:
+            y_pred = logits.detach().cpu().numpy()
+        
         labels = inputs["labels"]
         labels = labels.detach().cpu().numpy()
         
@@ -141,13 +145,13 @@ def train(task, dataloader, model, optimizer, scheduler):
         train_len += len(labels)
 
         if task == "STS-B":
+            y_p = [float(i) for i in y_p]
             pearson_corr = pearsonr(y_p, y_l)[0] 
             spearman_corr = spearmanr(y_p, y_l)[0]
 
             tq.set_postfix(loss=loss_num / train_len, pearson=pearson_corr, spearman=spearman_corr)
         else:
             acc += sum(y_pred == labels) 
-            ## 进度条实时显示
             tq.set_postfix(loss=loss_num / train_len, acc=acc / train_len)
 
 def eval(task, dataloader, model):
@@ -171,7 +175,7 @@ def eval(task, dataloader, model):
             ## outputs ==> loss, logits, hidden_states, attentions
             outputs = model(**inputs)
             logits = outputs[1]
-            if task != "SST-B":
+            if task != "STS-B":
                 y_pred = np.argmax(logits.detach().cpu().numpy(), axis=1)
             else:
                 y_pred = logits.detach().cpu().numpy()
@@ -184,11 +188,11 @@ def eval(task, dataloader, model):
         acc = sum(np.array(y_l) == np.array(y_p)) / len(y_l)
 
         if task == "STS-B":
+            y_p = [float(i) for i in y_p]
             pearson_corr = pearsonr(y_p, y_l)[0] 
             spearman_corr = spearmanr(y_p, y_l)[0]
 
-            logging.debug(f'------------pearson_corr:{pearson_corr},\
-                spearman_corr:{spearman_corr}------------')
+            logging.debug(f'------pearson_corr:{pearson_corr}, spearman_corr:{spearman_corr}------')
             return pearson_corr
 
         elif task == "CoLA":
@@ -251,7 +255,6 @@ def test(task, dataloader, model, labels):
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
     for task in TASKS:
         log()
 
@@ -309,4 +312,5 @@ def main():
             test(task, test_mis_dataloader, model, labels)
 
         logging.debug(f"---------------------{task} Done!------------------\n\n\n")
+
 main()
