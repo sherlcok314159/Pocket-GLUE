@@ -20,7 +20,7 @@ GLUE benchmark: [General Language UnderstandingEvaluation](https://gluebenchmark
 
 - 下载bert预训练的权重(这里使用的是[HuggingFace的bert](https://huggingface.co/bert-base-uncased))到指定文件夹；
 
-- 代码组成。运行时配置好超参之后直接`python main.py`即可
+- 代码组成。运行时配置好超参和环境之后直接`python main.py`即可
   ```
   ├── main.py
   ├── config.py ## 配置超参数  
@@ -28,3 +28,4 @@ GLUE benchmark: [General Language UnderstandingEvaluation](https://gluebenchmark
   ├── helper.py ## 设置随机种子
   ├── requirements.txt ## 环境
   ```
+### 
