@@ -9,10 +9,9 @@ from load_data import *
 from scipy.stats import pearsonr, spearmanr
 from sklearn.metrics import matthews_corrcoef, f1_score
 from torch.utils.data.dataloader import Dataset, DataLoader
-from transformers import AdamW, get_linear_schedule_with_warmup
-from transformers import BertConfig, BertTokenizer, BertForSequenceClassification
+from transformers import AdamW, BertConfig, BertTokenizer, BertForSequenceClassification
 
-set_seed(2022)
+set_seed(2021)
 
 TASKS = ["CoLA", "MNLI", "MRPC", "QNLI", "QQP", "RTE", "SST-2", "STS-B", "WNLI"]
 
@@ -103,7 +102,7 @@ def ToDataloader(task):
 
     return train_dataloader, eval_dataloader, test_dataloader, labels
 
-def train(task, dataloader, model, optimizer, scheduler):
+def train(task, dataloader, model, optimizer):
     '''Train The Model'''
     logging.debug("Training Begins!!!\n")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -126,7 +125,6 @@ def train(task, dataloader, model, optimizer, scheduler):
         loss = outputs[0]
         loss.backward()
         optimizer.step()
-        scheduler.step()
         model.zero_grad()
     
         logits = outputs[1]
@@ -255,6 +253,7 @@ def test(task, dataloader, model, labels):
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
     for task in TASKS:
         log()
 
@@ -268,23 +267,8 @@ def main():
         config.num_labels = len(labels) if type(labels) != float else 1
         model = BertForSequenceClassification.from_pretrained(model_path, config=config)
         model.to(device)
-        param_optimizer = list(model.named_parameters())
 
-        no_decay = ["bias", "LayerNorm.weight"]
-        optimizer_parameters = [
-            {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
-            {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0},
-        ]
-
-        optimizer = AdamW(optimizer_parameters, lr=learning_rate)
-
-        num_train_steps = int(len(train_dataloader) * epochs)
-
-        scheduler = get_linear_schedule_with_warmup(
-            optimizer,
-            num_warmup_steps=int(num_train_steps * warmup_ratio),
-            num_training_steps=num_train_steps
-        )
+        optimizer = AdamW(model.parameters(), lr=learning_rate)
 
         best_metric = 0
         path = f"pretrained/{task}"
@@ -293,7 +277,7 @@ def main():
 
         for e in range(epochs):
             logging.debug(f'------------epoch:{e}------------')
-            train(task, train_dataloader, model, optimizer, scheduler)
+            train(task, train_dataloader, model, optimizer)
             metric = eval(task, eval_dataloader, model) 
             if task == "MNLI":
                 dis_metric = eval(task, eval_mis_dataloader, model)

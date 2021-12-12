@@ -3,7 +3,6 @@
 batch_size = 32
 learning_rate = 2e-5
 max_seq_length = 128
-warmup_ratio = 0.1
-model_path = "/media/tony/Storage/pretrain/bert-base-uncased"
-data_dir = "GLUE-torch/glue_data"
-epochs = 5
+model_path = "/home/amax/AI/pretrain/bert-base-uncased"
+data_dir = "/home/amax/AI/Yunpeng/final_test/glue_data"
+epochs = 10
