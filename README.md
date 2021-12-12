@@ -35,7 +35,7 @@ GLUE benchmark: [General Language UnderstandingEvaluation](https://gluebenchmark
 
   |百度网盘    |  [链接](https://pan.baidu.com/s/1Q4UyQW8AVR1smRxnEhFFKg)|提取码: 94jy |
   | --- | --- | --- |
-  |  谷歌云盘   |   [链接]()  |     |
+  |  腾讯微云   |   [链接](https://share.weiyun.com/vKYa9GBO)  |     |
 
 
 - 下载bert预训练的权重(这里使用的是[HuggingFace的bert](https://huggingface.co/bert-base-uncased))到指定文件夹；
