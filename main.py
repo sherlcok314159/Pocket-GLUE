@@ -1,6 +1,7 @@
 import os
 import torch
 import logging
+import transformers
 import numpy as np
 from config import *
 from tqdm import tqdm
@@ -11,6 +12,7 @@ from sklearn.metrics import matthews_corrcoef, f1_score
 from torch.utils.data.dataloader import Dataset, DataLoader
 from transformers import AdamW, BertConfig, BertTokenizer, BertForSequenceClassification
 
+transformers.logging.set_verbosity_error()
 set_seed(2021)
 
 TASKS = ["CoLA", "MNLI", "MRPC", "QNLI", "QQP", "RTE", "SST-2", "STS-B", "WNLI"]
